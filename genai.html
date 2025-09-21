@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactCheck Pro - AI-Powered Misinformation Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #2F4156 0%, #2F4156 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-yellow-100 font-sans">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🛡️</span>
+                    </div>
+                    <h1 class="text-2xl font-bold">FactCheck Pro</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6 items-center">
+                    <a href="#analyzer" class="hover:text-blue-200 transition-colors">Analyzer</a>
+                    <a href="#education" class="hover:text-blue-200 transition-colors">Learn</a>
+                    <a href="#about" class="hover:text-blue-200 transition-colors">About</a>
+                    <button id="profileBtn" class="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-full transition-colors">
+                        <span class="text-xl">👤</span>
+                        <span id="profileText">Profile</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-5xl font-bold mb-6">Fight Misinformation with AI</h2>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">Detect fake news, analyze bias, and learn digital literacy skills with our advanced AI-powered fact-checking system.</p>
+            <button onclick="scrollToAnalyzer()" class="bg-white text-green-700 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-100 transition-colors shadow-lg">
+                Start Fact-Checking Now
+            </button>
+        </div>
+    </section>
+
+    <!-- Main Analyzer Section -->
+    <section id="analyzer" class="py-16 bg-yellow-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-black mb-4">AI Content Analyzer</h3>
+                <p class="text-black max-w-2xl mx-auto">Paste any news article, social media post, or forwarded message below for instant credibility analysis.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <div style="background-color: #567C8D;" class="rounded-2xl p-8 shadow-lg">
+                    <form id="analysisForm" class="space-y-6">
+                        <div>
+                            <label for="contentInput" class="block text-sm font-medium text-white mb-2">Content to Analyze</label>
+                            <textarea 
+                                id="contentInput" 
+                                rows="6" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                                placeholder="Paste the news article, social media post, or message you want to fact-check here..."
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="sourceUrl" class="block text-sm font-medium text-white mb-2">Source URL (Optional)</label>
+                                <input 
+                                    type="url" 
+                                    id="sourceUrl" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    placeholder="https://example.com/article"
+                                >
+                            </div>
+                            <div>
+                                <label for="analysisType" class="block text-sm font-medium text-white mb-2">Analysis Type</label>
+                                <select id="analysisType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="comprehensive">Comprehensive Analysis</option>
+                                    <option value="fact-check">Fact-Check Only</option>
+                                    <option value="bias-detection">Bias Detection</option>
+                                    <option value="source-reliability">Source Reliability</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            class="w-full bg-sky-200 text-gray-800 py-4 rounded-lg font-semibold text-lg hover:bg-sky-300 transition-colors shadow-lg"
+                        >
+                            <span id="analyzeButtonText">🔍 Analyze Content</span>
+                            <span id="analyzingText" class="hidden">🔄 Analyzing...</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="hidden mt-8">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="bg-gray-800 text-white px-6 py-4">
+                            <h4 class="text-xl font-semibold">Analysis Results</h4>
+                        </div>
+                        <div class="p-6">
+                            <div id="verdictSection" class="mb-6">
+                                <div class="flex items-center space-x-3 mb-3">
+                                    <span class="text-2xl" id="verdictIcon">🔍</span>
+                                    <h5 class="text-lg font-semibold">Verdict</h5>
+                                </div>
+                                <div id="verdictBadge" class="inline-block px-4 py-2 rounded-full text-sm font-medium">
+                                    <!-- Verdict will be inserted here -->
+                                </div>
+                            </div>
+
+                            <div id="reasoningSection" class="mb-6">
+                                <h5 class="text-lg font-semibold mb-3 flex items-center">
+                                    <span class="mr-2">🧠</span> Reasoning
+                                </h5>
+                                <p id="reasoningText" class="text-gray-700 leading-relaxed">
+                                    <!-- Reasoning will be inserted here -->
+                                </p>
+                            </div>
+
+                            <div id="educationalSection" class="mb-6">
+                                <h5 class="text-lg font-semibold mb-3 flex items-center">
+                                    <span class="mr-2">💡</span> Educational Insight
+                                </h5>
+                                <p id="educationalText" class="text-gray-700 leading-relaxed">
+                                    <!-- Educational insight will be inserted here -->
+                                </p>
+                            </div>
+
+                            <div id="nextStepSection">
+                                <h5 class="text-lg font-semibold mb-3 flex items-center">
+                                    <span class="mr-2">🎯</span> Next Step
+                                </h5>
+                                <p id="nextStepText" class="text-gray-700 leading-relaxed">
+                                    <!-- Next step will be inserted here -->
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-yellow-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-black mb-4">Powerful Detection Features</h3>
+                <p class="text-black">Our AI analyzes multiple aspects of content to provide comprehensive credibility assessment.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">✅</span>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3 text-black">Fact Verification</h4>
+                    <p class="text-black">Cross-reference claims with credible sources and databases.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🎭</span>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Bias Detection</h4>
+                    <p class="text-gray-600">Identify emotional manipulation and misleading techniques.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🏛️</span>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Source Analysis</h4>
+                    <p class="text-gray-600">Evaluate the credibility and track record of sources.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🎓</span>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Digital Literacy</h4>
+                    <p class="text-gray-600">Learn to spot misinformation independently.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="py-16" style="background-color: #C8D9E6;">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-4">Learn Digital Literacy</h3>
+                <p class="text-gray-600">Master the skills to identify misinformation on your own.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                    <h4 class="text-xl font-semibold mb-4 text-blue-800">🔍 Red Flags to Watch</h4>
+                    <ul class="space-y-2 text-blue-700">
+                        <li>• Sensational headlines with ALL CAPS</li>
+                        <li>• Lack of author or publication date</li>
+                        <li>• Emotional language designed to provoke</li>
+                        <li>• No credible sources cited</li>
+                        <li>• Claims that seem too good/bad to be true</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                    <h4 class="text-xl font-semibold mb-4 text-green-800">✅ Verification Steps</h4>
+                    <ul class="space-y-2 text-green-700">
+                        <li>• Check multiple reliable news sources</li>
+                        <li>• Look up the author's credentials</li>
+                        <li>• Verify images with reverse search</li>
+                        <li>• Check publication date relevance</li>
+                        <li>• Cross-reference with fact-checkers</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+                    <h4 class="text-xl font-semibold mb-4 text-purple-800">🛡️ Trusted Sources</h4>
+                    <ul class="space-y-2 text-purple-700">
+                        <li>• Established news organizations</li>
+                        <li>• Government health agencies</li>
+                        <li>• Academic institutions</li>
+                        <li>• Fact-checking websites</li>
+                        <li>• Peer-reviewed research</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Welcome to FactCheck Pro</h3>
+                <p class="text-gray-600">Sign in to access your analysis history</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="your@email.com">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your password">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">Don't have an account? <button id="signupBtn" class="text-blue-600 hover:text-blue-700 font-medium">Sign up</button></p>
+                <button id="closeModal" class="mt-4 text-gray-500 hover:text-gray-700">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div id="profileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <span class="text-2xl">👤</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold" id="userName">John Doe</h3>
+                            <p class="opacity-90" id="userEmail">john@example.com</p>
+                        </div>
+                    </div>
+                    <button id="closeProfileModal" class="text-white hover:text-gray-200 text-2xl">×</button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <!-- Stats Overview -->
+                <div class="grid md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-blue-50 p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-blue-600">24</div>
+                        <div class="text-sm text-gray-600">Total Analyses</div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-green-600">18</div>
+                        <div class="text-sm text-gray-600">Verified Content</div>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-yellow-600">4</div>
+                        <div class="text-sm text-gray-600">Flagged Items</div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-purple-600">2</div>
+                        <div class="text-sm text-gray-600">False Content</div>
+                    </div>
+                </div>
+
+                <!-- File Categories -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4">Your Uploaded Content</h4>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center hover:bg-gray-100 transition-colors cursor-pointer" onclick="showFileCategory('documents')">
+                            <div class="text-3xl mb-2">📄</div>
+                            <div class="font-medium">Documents</div>
+                            <div class="text-sm text-gray-600">12 files</div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center hover:bg-gray-100 transition-colors cursor-pointer" onclick="showFileCategory('images')">
+                            <div class="text-3xl mb-2">🖼️</div>
+                            <div class="font-medium">Images</div>
+                            <div class="text-sm text-gray-600">8 files</div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center hover:bg-gray-100 transition-colors cursor-pointer" onclick="showFileCategory('videos')">
+                            <div class="text-3xl mb-2">🎥</div>
+                            <div class="font-medium">Videos</div>
+                            <div class="text-sm text-gray-600">3 files</div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center hover:bg-gray-100 transition-colors cursor-pointer" onclick="showFileCategory('audio')">
+                            <div class="text-3xl mb-2">🎵</div>
+                            <div class="font-medium">Audio</div>
+                            <div class="text-sm text-gray-600">1 file</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Analysis History -->
+                <div class="mb-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4">Recent Analysis History</h4>
+                    <div class="space-y-3">
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-green-600 text-xl">✅</span>
+                                    <div>
+                                        <div class="font-medium">News Article: "Climate Change Report"</div>
+                                        <div class="text-sm text-gray-600">Analyzed 2 hours ago • Verified</div>
+                                    </div>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-yellow-600 text-xl">⚠️</span>
+                                    <div>
+                                        <div class="font-medium">Social Media Post: "Breaking News Alert"</div>
+                                        <div class="text-sm text-gray-600">Analyzed 1 day ago • Misleading</div>
+                                    </div>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-red-600 text-xl">❌</span>
+                                    <div>
+                                        <div class="font-medium">WhatsApp Forward: "Health Miracle Cure"</div>
+                                        <div class="text-sm text-gray-600">Analyzed 3 days ago • False</div>
+                                    </div>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-blue-600 text-xl">🎥</span>
+                                    <div>
+                                        <div class="font-medium">Video: "Documentary Clip Analysis"</div>
+                                        <div class="text-sm text-gray-600">Analyzed 1 week ago • Verified</div>
+                                    </div>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Actions -->
+                <div class="border-t pt-6">
+                    <div class="flex flex-wrap gap-3">
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Export History
+                        </button>
+                        <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                            Account Settings
+                        </button>
+                        <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help & Support Section -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-4">Need Help or Want to Learn More?</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto">Get support, learn about our mission, and connect with us on social platforms</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Help Section -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl">❓</span>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-800 mb-3">Get Help</h4>
+                        <p class="text-gray-600">Need assistance using our fact-checking tools or understanding results?</p>
+                    </div>
+                    <div class="space-y-3">
+                        <button class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            📚 View User Guide
+                        </button>
+                        <button class="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                            💬 Contact Support
+                        </button>
+                        <button class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                            🎥 Watch Tutorials
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Learn More Section -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl">🌟</span>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-800 mb-3">Learn More About Us</h4>
+                        <p class="text-gray-600">Discover our mission to combat misinformation and promote digital literacy</p>
+                    </div>
+                    <div class="space-y-3">
+                        <button class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                            🎯 Our Mission
+                        </button>
+                        <button class="w-full bg-teal-600 text-white py-3 px-6 rounded-lg hover:bg-teal-700 transition-colors font-medium">
+                            👥 Meet the Team
+                        </button>
+                        <button class="w-full bg-orange-600 text-white py-3 px-6 rounded-lg hover:bg-orange-700 transition-colors font-medium">
+                            📊 Impact Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Media & Partners -->
+            <div class="mt-16 text-center">
+                <h4 class="text-2xl font-bold text-gray-800 mb-6">Connect With Us & Our Partners</h4>
+                <p class="text-gray-600 mb-8">Follow us on social media and see how major platforms support fact-checking</p>
+                
+                <div class="flex flex-wrap justify-center gap-6">
+                    <!-- Facebook -->
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center space-x-3">
+                        <i class="fab fa-facebook-f text-2xl"></i>
+                        <div class="text-left">
+                            <div class="font-semibold">Facebook</div>
+                            <div class="text-sm opacity-90">Fact-checking partner</div>
+                        </div>
+                    </a>
+
+                    <!-- YouTube -->
+                    <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="bg-red-600 text-white px-6 py-4 rounded-xl hover:bg-red-700 transition-colors shadow-lg flex items-center space-x-3">
+                        <i class="fab fa-youtube text-2xl"></i>
+                        <div class="text-left">
+                            <div class="font-semibold">YouTube</div>
+                            <div class="text-sm opacity-90">Educational content</div>
+                        </div>
+                    </a>
+
+                    <!-- Google -->
+                    <a href="https://google.com" target="_blank" rel="noopener noreferrer" class="bg-gray-700 text-white px-6 py-4 rounded-xl hover:bg-gray-800 transition-colors shadow-lg flex items-center space-x-3">
+                        <i class="fab fa-google text-2xl"></i>
+                        <div class="text-left">
+                            <div class="font-semibold">Google</div>
+                            <div class="text-sm opacity-90">Search verification</div>
+                        </div>
+                    </a>
+
+                    <!-- Twitter/X -->
+                    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="bg-black text-white px-6 py-4 rounded-xl hover:bg-gray-900 transition-colors shadow-lg flex items-center space-x-3">
+                        <i class="fab fa-x-twitter text-2xl"></i>
+                        <div class="text-left">
+                            <div class="font-semibold">Twitter/X</div>
+                            <div class="text-sm opacity-90">Real-time updates</div>
+                        </div>
+                    </a>
+
+                    <!-- LinkedIn -->
+                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="bg-blue-700 text-white px-6 py-4 rounded-xl hover:bg-blue-800 transition-colors shadow-lg flex items-center space-x-3">
+                        <i class="fab fa-linkedin-in text-2xl"></i>
+                        <div class="text-left">
+                            <div class="font-semibold">LinkedIn</div>
+                            <div class="text-sm opacity-90">Professional network</div>
+                        </div>
+                    </a>
+
+                    <!-- Instagram -->
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-xl hover:from-purple-600 hover:to-pink-600 transition-colors shadow-lg flex items-center space-x-3">
+                        <i class="fab fa-instagram text-2xl"></i>
+                        <div class="text-left">
+                            <div class="font-semibold">Instagram</div>
+                            <div class="text-sm opacity-90">Visual fact-checks</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="text-2xl">🛡️</span>
+                        <h4 class="text-xl font-bold">FactCheck Pro</h4>
+                    </div>
+                    <p class="text-gray-400">Empowering users to combat misinformation through AI-powered analysis and digital literacy education.</p>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Quick Links</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#analyzer" class="hover:text-white transition-colors">Content Analyzer</a></li>
+                        <li><a href="#education" class="hover:text-white transition-colors">Digital Literacy</a></li>
+                        <li><a href="#about" class="hover:text-white transition-colors">About Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Contact</h5>
+                    <p class="text-gray-400">Built with AI to promote media literacy and combat the spread of misinformation.</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 FactCheck Pro. Promoting digital literacy and fighting misinformation.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample analysis responses for demonstration
+        const sampleAnalyses = {
+            verified: {
+                verdict: "Verified",
+                icon: "✅",
+                badgeClass: "bg-green-100 text-green-800",
+                reasoning: "This content appears to be from a credible news source with proper attribution, recent publication date, and claims that can be cross-referenced with multiple reliable sources. The language is factual and balanced without emotional manipulation.",
+                educational: "This is a good example of reliable reporting. Notice how it includes the author's name, publication date, quotes from credible sources, and avoids sensational language. These are all positive indicators of trustworthy content.",
+                nextStep: "This content appears reliable and can be shared responsibly. Consider checking one additional source to confirm details before sharing widely."
+            },
+            misleading: {
+                verdict: "Misleading",
+                icon: "⚠️",
+                badgeClass: "bg-yellow-100 text-yellow-800",
+                reasoning: "While this content contains some factual elements, it uses selective information, emotional language, and presents a biased perspective. Key context is missing, and claims are exaggerated or taken out of context.",
+                educational: "This content shows classic signs of bias: cherry-picked statistics, emotional language designed to provoke anger or fear, and missing important context. Always look for what information might be left out of the story.",
+                nextStep: "Avoid sharing this content as-is. Look for more balanced reporting from multiple sources before forming an opinion on this topic."
+            },
+            false: {
+                verdict: "False",
+                icon: "❌",
+                badgeClass: "bg-red-100 text-red-800",
+                reasoning: "This content contains demonstrably false information that contradicts established facts from credible sources. The claims made cannot be verified and appear to be fabricated or severely distorted.",
+                educational: "Red flags in this content include: lack of credible sources, sensational claims, and information that contradicts well-established facts. Always verify extraordinary claims with multiple trusted sources.",
+                nextStep: "Do not share this content. It contains false information that could mislead others. Consider reporting it as misinformation on the platform where you found it."
+            },
+            unverifiable: {
+                verdict: "Unverifiable",
+                icon: "❓",
+                badgeClass: "bg-gray-100 text-gray-800",
+                reasoning: "This content makes claims that cannot be independently verified at this time. There may be insufficient information, conflicting reports, or the claims may be too recent for proper fact-checking.",
+                educational: "When information is unverifiable, it's important to wait for more evidence before accepting or sharing it. Breaking news often contains unconfirmed details that may change as more information becomes available.",
+                nextStep: "Hold off on sharing this content until more information becomes available. Check back with trusted news sources in a few hours or days for verified updates."
+            }
+        };
+
+        function scrollToAnalyzer() {
+            document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getRandomAnalysis() {
+            const types = ['verified', 'misleading', 'false', 'unverifiable'];
+            const randomType = types[Math.floor(Math.random() * types.length)];
+            return sampleAnalyses[randomType];
+        }
+
+        function displayResults(analysis) {
+            // Update verdict section
+            document.getElementById('verdictIcon').textContent = analysis.icon;
+            const verdictBadge = document.getElementById('verdictBadge');
+            verdictBadge.textContent = analysis.verdict;
+            verdictBadge.className = `inline-block px-4 py-2 rounded-full text-sm font-medium ${analysis.badgeClass}`;
+
+            // Update content sections
+            document.getElementById('reasoningText').textContent = analysis.reasoning;
+            document.getElementById('educationalText').textContent = analysis.educational;
+            document.getElementById('nextStepText').textContent = analysis.nextStep;
+
+            // Show results section
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Form submission handler
+        document.getElementById('analysisForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const content = document.getElementById('contentInput').value.trim();
+            if (!content) {
+                alert('Please enter some content to analyze.');
+                return;
+            }
+
+            // Show loading state
+            const analyzeButton = document.querySelector('button[type="submit"]');
+            const buttonText = document.getElementById('analyzeButtonText');
+            const analyzingText = document.getElementById('analyzingText');
+            
+            buttonText.classList.add('hidden');
+            analyzingText.classList.remove('hidden');
+            analyzeButton.disabled = true;
+
+            // Simulate AI analysis (in real implementation, this would call your AI API)
+            setTimeout(() => {
+                const analysis = getRandomAnalysis();
+                displayResults(analysis);
+
+                // Reset button state
+                buttonText.classList.remove('hidden');
+                analyzingText.classList.add('hidden');
+                analyzeButton.disabled = false;
+            }, 2000);
+        });
+
+        // User authentication state
+        let isLoggedIn = false;
+        let currentUser = null;
+
+        // Profile button functionality
+        document.getElementById('profileBtn').addEventListener('click', function() {
+            if (isLoggedIn) {
+                document.getElementById('profileModal').classList.remove('hidden');
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        });
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Simulate login (in real app, this would call your authentication API)
+            if (email && password) {
+                isLoggedIn = true;
+                currentUser = {
+                    name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+                    email: email
+                };
+                
+                // Update UI
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('profileText').textContent = currentUser.name;
+                
+                // Close login modal and show profile
+                document.getElementById('loginModal').classList.add('hidden');
+                document.getElementById('profileModal').classList.remove('hidden');
+                
+                // Clear form
+                document.getElementById('loginForm').reset();
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            isLoggedIn = false;
+            currentUser = null;
+            document.getElementById('profileText').textContent = 'Profile';
+            document.getElementById('profileModal').classList.add('hidden');
+        });
+
+        // Modal close handlers
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('loginModal').classList.add('hidden');
+        });
+
+        document.getElementById('closeProfileModal').addEventListener('click', function() {
+            document.getElementById('profileModal').classList.add('hidden');
+        });
+
+        // Sign up button (placeholder)
+        document.getElementById('signupBtn').addEventListener('click', function() {
+            alert('Sign up functionality would redirect to registration page');
+        });
+
+        // File category display function
+        function showFileCategory(category) {
+            const categories = {
+                documents: [
+                    { name: 'News Article - Climate Report.pdf', date: '2 hours ago', status: 'verified' },
+                    { name: 'Research Paper - AI Ethics.docx', date: '1 day ago', status: 'verified' },
+                    { name: 'WhatsApp Forward - Health Tips.txt', date: '3 days ago', status: 'false' }
+                ],
+                images: [
+                    { name: 'Screenshot - Social Media Post.png', date: '1 day ago', status: 'misleading' },
+                    { name: 'Infographic - Statistics.jpg', date: '2 days ago', status: 'verified' },
+                    { name: 'Meme - Political Content.jpg', date: '1 week ago', status: 'misleading' }
+                ],
+                videos: [
+                    { name: 'Documentary Clip - History.mp4', date: '1 week ago', status: 'verified' },
+                    { name: 'TikTok Video - Health Claims.mp4', date: '2 weeks ago', status: 'false' },
+                    { name: 'News Broadcast - Breaking News.mp4', date: '1 month ago', status: 'verified' }
+                ],
+                audio: [
+                    { name: 'Podcast Clip - Interview.mp3', date: '2 weeks ago', status: 'verified' }
+                ]
+            };
+
+            const files = categories[category] || [];
+            const fileList = files.map(file => {
+                const statusIcon = {
+                    verified: '✅',
+                    misleading: '⚠️',
+                    false: '❌',
+                    unverifiable: '❓'
+                }[file.status];
+                
+                return `
+                    <div class="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-lg">${statusIcon}</span>
+                                <div>
+                                    <div class="font-medium text-sm">${file.name}</div>
+                                    <div class="text-xs text-gray-600">${file.date} • ${file.status}</div>
+                                </div>
+                            </div>
+                            <button class="text-blue-600 hover:text-blue-700 text-xs font-medium">View</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            alert(`${category.charAt(0).toUpperCase() + category.slice(1)} Files:\n\n${files.map(f => `• ${f.name} (${f.status})`).join('\n')}`);
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('profileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9829c911c3de17a6',t:'MTc1ODQ2MDA0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+html>
